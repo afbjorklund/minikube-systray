@@ -96,8 +96,8 @@ Window::Window()
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(statusGroupBox);
-    mainLayout->addWidget(iconGroupBox);
-    mainLayout->addWidget(messageGroupBox);
+    //mainLayout->addWidget(iconGroupBox);
+    //mainLayout->addWidget(messageGroupBox);
     setLayout(mainLayout);
 
     setIcon(0);
