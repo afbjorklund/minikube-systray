@@ -215,20 +215,29 @@ void Window::createStatusGroupBox()
     statusGroupBox->setLayout(statusLayout);
 }
 
-void Window::updateStatus()
-{
+bool Window::getProcessOutput(QStringList arguments, QString& text) {
     bool success;
 
     QString program = "minikube";
-    QStringList arguments;
-    arguments << "status" << "--format" << "{{.Host}}";
 
     QProcess *process = new QProcess(this);
     process->start(program, arguments);
     success = process->waitForFinished();
     if (success) {
-        QString *text = new QString(process->readAllStandardOutput());
+        text = process->readAllStandardOutput();
+    }
+    delete process;
+    return success;
+}
 
+void Window::updateStatus()
+{
+    QStringList arguments;
+    arguments << "status" << "--format" << "{{.Host}}";
+
+    QString *text = new QString();
+    bool success = getProcessOutput(arguments, *text);
+    if (success) {
         if (text->startsWith("Running")) {
             statusLabel->setText(tr("Running"));
             startButton->setEnabled(false);
@@ -242,10 +251,8 @@ void Window::updateStatus()
             startButton->setEnabled(false);
             stopButton->setEnabled(false);
         }
-
-        delete text;
     }
-    delete process;
+    delete text;
 }
 
 void Window::sendMachineCommand(QString cmd)

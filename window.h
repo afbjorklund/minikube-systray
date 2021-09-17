@@ -100,6 +100,7 @@ private:
     void createActions();
     void createTrayIcon();
 
+    bool getProcessOutput(QStringList arguments, QString& text);
     void updateStatus();
     void sendMachineCommand(QString cmd);
     void startMachine();
