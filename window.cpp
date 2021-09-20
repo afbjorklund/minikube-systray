@@ -72,6 +72,13 @@
 #include <QThread>
 #include <QDebug>
 
+#ifndef QT_NO_TERMWIDGET
+#include <QApplication>
+#include <QMainWindow>
+#include <QStandardPaths>
+#include "qtermwidget.h"
+#endif
+
 //! [0]
 Window::Window()
 {
@@ -82,6 +89,7 @@ Window::Window()
     createActions();
     createTrayIcon();
 
+    connect(sshButton, &QAbstractButton::clicked, this, &Window::sshConsole);
     connect(updateButton, &QAbstractButton::clicked, this, &Window::updateStatus);
     connect(startButton, &QAbstractButton::clicked, this, &Window::startMachine);
     connect(stopButton, &QAbstractButton::clicked, this, &Window::stopMachine);
@@ -161,7 +169,13 @@ void Window::createStatusGroupBox()
     QIcon updateIcon = QIcon(":/images/view-refresh.png");
     updateButton = new QPushButton(updateIcon, "");
     updateButton->setFixedWidth(32);
+    nameLabel = new QLabel("");
+    sshButton = new QPushButton(tr("SSH"));
     statusLabel = new QLabel("Unknown");
+
+#ifdef QT_NO_TERMWIDGET
+    sshButton->setEnabled(false);
+#endif
 
     startButton = new QPushButton(tr("Start"));
     stopButton = new QPushButton(tr("Stop"));
@@ -171,9 +185,38 @@ void Window::createStatusGroupBox()
     QHBoxLayout *statusLayout = new QHBoxLayout;
     statusLayout->addWidget(updateButton);
     statusLayout->addWidget(statusLabel);
+    statusLayout->addWidget(sshButton);
     statusLayout->addWidget(startButton);
     statusLayout->addWidget(stopButton);
     statusGroupBox->setLayout(statusLayout);
+}
+
+void Window::sshConsole()
+{
+#ifndef QT_NO_TERMWIDGET
+    QMainWindow *mainWindow = new QMainWindow();
+    int startnow = 0; // set shell program first
+
+    QTermWidget *console = new QTermWidget(startnow);
+
+    QFont font = QApplication::font();
+    font.setFamily("Monospace");
+    font.setPointSize(10);
+
+    console->setTerminalFont(font);
+    console->setColorScheme("Tango");
+    console->setShellProgram(QStandardPaths::findExecutable("minikube"));
+    QStringList args = {"ssh"};
+    console->setArgs(args);
+    console->startShellProgram();
+
+    QObject::connect(console, SIGNAL(finished()), mainWindow, SLOT(close()));
+
+    mainWindow->setWindowTitle(nameLabel->text());
+    mainWindow->resize(800, 400);
+    mainWindow->setCentralWidget(console);
+    mainWindow->show();
+#endif
 }
 
 bool Window::getProcessOutput(QStringList arguments, QString& text) {
