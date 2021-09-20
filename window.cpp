@@ -174,7 +174,7 @@ void Window::createStatusGroupBox()
     statusLabel = new QLabel("Unknown");
 
 #ifdef QT_NO_TERMWIDGET
-    sshButton->setEnabled(false);
+    sshButton->hide());
 #endif
 
     startButton = new QPushButton(tr("Start"));
@@ -244,14 +244,17 @@ void Window::updateStatus()
     if (success) {
         if (text->startsWith("Running")) {
             statusLabel->setText(tr("Running"));
+            sshButton->setEnabled(true);
             startButton->setEnabled(false);
             stopButton->setEnabled(true);
         } else if (text->startsWith("Stopped")) {
             statusLabel->setText(tr("Stopped"));
+            sshButton->setEnabled(false);
             startButton->setEnabled(true);
             stopButton->setEnabled(false);
         } else {
             statusLabel->setText(tr("Not Started "));
+            sshButton->setEnabled(false);
             startButton->setEnabled(false);
             stopButton->setEnabled(false);
         }
