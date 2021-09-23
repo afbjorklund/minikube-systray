@@ -174,7 +174,7 @@ void Window::createStatusGroupBox()
     statusLabel = new QLabel("Unknown");
 
 #ifdef QT_NO_TERMWIDGET
-    sshButton->hide());
+    sshButton->hide();
 #endif
 
     startButton = new QPushButton(tr("Start"));
