@@ -9,8 +9,14 @@ requires(qtConfig(combobox))
 DISTFILES += \
     LICENSE
 
-win32: DEFINES += QT_NO_TERMWIDGET
-macx: DEFINES += QT_NO_TERMWIDGET
+# Enabling qtermwidget requires GPL-v2 license
+#CONFIG += gpl_licensed
 
-unix:!macx: CONFIG += link_pkgconfig
-unix:!macx: PKGCONFIG += qtermwidget5
+gpl_licensed {
+  win32: DEFINES += QT_NO_TERMWIDGET
+
+  unix: CONFIG += link_pkgconfig
+  unix: PKGCONFIG += qtermwidget5
+} else {
+  DEFINES += QT_NO_TERMWIDGET
+}

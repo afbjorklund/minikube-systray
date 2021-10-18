@@ -71,11 +71,13 @@
 #include <QProcess>
 #include <QThread>
 #include <QDebug>
+#include <QString>
+#include <QStandardPaths>
+#include <QTextEdit>
 
 #ifndef QT_NO_TERMWIDGET
 #include <QApplication>
 #include <QMainWindow>
-#include <QStandardPaths>
 #include "qtermwidget.h"
 #endif
 
@@ -172,10 +174,6 @@ void Window::createStatusGroupBox()
     sshButton = new QPushButton(tr("SSH"));
     statusLabel = new QLabel("Unknown");
 
-#ifdef QT_NO_TERMWIDGET
-    sshButton->hide();
-#endif
-
     startButton = new QPushButton(tr("Start"));
     stopButton = new QPushButton(tr("Stop"));
 
@@ -192,6 +190,7 @@ void Window::createStatusGroupBox()
 
 void Window::sshConsole()
 {
+    QString program = QStandardPaths::findExecutable("minikube");
 #ifndef QT_NO_TERMWIDGET
     QMainWindow *mainWindow = new QMainWindow();
     int startnow = 0; // set shell program first
@@ -204,7 +203,7 @@ void Window::sshConsole()
 
     console->setTerminalFont(font);
     console->setColorScheme("Tango");
-    console->setShellProgram(QStandardPaths::findExecutable("minikube"));
+    console->setShellProgram(program);
     QStringList args = { "ssh" };
     console->setArgs(args);
     console->startShellProgram();
@@ -215,6 +214,19 @@ void Window::sshConsole()
     mainWindow->resize(800, 400);
     mainWindow->setCentralWidget(console);
     mainWindow->show();
+#else
+    QString terminal = qEnvironmentVariable("TERMINAL");
+    if (terminal.isEmpty()) {
+        terminal = "x-terminal-emulator";
+        if (QStandardPaths::findExecutable(terminal).isEmpty()) {
+            terminal = "xterm";
+        }
+    }
+
+    QStringList arguments;
+    arguments << "-e" << QString("%1 ssh").arg(program);
+    QProcess *process = new QProcess(this);
+    process->start(QStandardPaths::findExecutable(terminal), arguments);
 #endif
 }
 
