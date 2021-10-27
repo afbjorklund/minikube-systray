@@ -156,8 +156,7 @@ void Window::iconActivated(QSystemTrayIcon::ActivationReason reason)
     case QSystemTrayIcon::DoubleClick:
         iconComboBox->setCurrentIndex((iconComboBox->currentIndex() + 1) % iconComboBox->count());
         break;
-    default:
-        ;
+    default:;
     }
 }
 //! [4]
@@ -206,7 +205,7 @@ void Window::sshConsole()
     console->setTerminalFont(font);
     console->setColorScheme("Tango");
     console->setShellProgram(QStandardPaths::findExecutable("minikube"));
-    QStringList args = {"ssh"};
+    QStringList args = { "ssh" };
     console->setArgs(args);
     console->startShellProgram();
 
@@ -219,7 +218,8 @@ void Window::sshConsole()
 #endif
 }
 
-bool Window::getProcessOutput(QStringList arguments, QString& text) {
+bool Window::getProcessOutput(QStringList arguments, QString &text)
+{
     bool success;
 
     QString program = "minikube";
@@ -237,7 +237,9 @@ bool Window::getProcessOutput(QStringList arguments, QString& text) {
 void Window::updateStatus()
 {
     QStringList arguments;
-    arguments << "status" << "--format" << "{{.Host}}";
+    arguments << "status"
+              << "--format"
+              << "{{.Host}}";
 
     QString *text = new QString();
     bool success = getProcessOutput(arguments, *text);

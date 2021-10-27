@@ -97,7 +97,7 @@ private:
     void createTrayIcon();
 
     void sshConsole();
-    bool getProcessOutput(QStringList arguments, QString& text);
+    bool getProcessOutput(QStringList arguments, QString &text);
     void updateStatus();
     void sendMachineCommand(QString cmd);
     void startMachine();
