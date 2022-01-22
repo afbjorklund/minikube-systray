@@ -93,7 +93,8 @@ Window::Window()
     iconComboBox->setCurrentIndex(1);
     trayIcon->show();
 
-    setWindowTitle(tr("Systray"));
+    setWindowTitle(tr("minikube"));
+    setWindowIcon(*trayIconIcon);
     resize(400, 300);
 }
 //! [0]
@@ -133,7 +134,6 @@ void Window::setIcon(int index)
 {
     QIcon icon = iconComboBox->itemIcon(index);
     trayIcon->setIcon(icon);
-    setWindowIcon(icon);
 
     trayIcon->setToolTip(iconComboBox->itemText(index));
 }
@@ -290,8 +290,11 @@ void Window::createTrayIcon()
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
 
+    trayIconIcon = new QIcon(":/images/minikube.png");
+
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
+    trayIcon->setIcon(*trayIconIcon);
 }
 
 #endif
