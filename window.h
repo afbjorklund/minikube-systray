@@ -93,6 +93,7 @@ private slots:
 
 private:
     void createStatusGroupBox();
+    void createMachineGroupBox();
     void createActions();
     void createTrayIcon();
 

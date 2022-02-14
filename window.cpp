@@ -84,6 +84,7 @@
 //! [0]
 Window::Window()
 {
+    createMachineGroupBox();
     createStatusGroupBox();
     iconComboBox = new QComboBox;
     iconComboBox->addItem(QIcon(":/images/minikube.png"), tr("minikube"));
@@ -99,6 +100,7 @@ Window::Window()
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(statusGroupBox);
+    mainLayout->addWidget(machineGroupBox);
     setLayout(mainLayout);
 
     setIcon(0);
@@ -170,7 +172,6 @@ void Window::createStatusGroupBox()
     updateButton = new QPushButton(updateIcon, "");
     updateButton->setFixedWidth(32);
     nameLabel = new QLabel("");
-    sshButton = new QPushButton(tr("SSH"));
     statusLabel = new QLabel("Unknown");
 
     startButton = new QPushButton(tr("Start"));
@@ -181,10 +182,21 @@ void Window::createStatusGroupBox()
     QHBoxLayout *statusLayout = new QHBoxLayout;
     statusLayout->addWidget(updateButton);
     statusLayout->addWidget(statusLabel);
-    statusLayout->addWidget(sshButton);
+    statusLayout->addStretch();
     statusLayout->addWidget(startButton);
     statusLayout->addWidget(stopButton);
     statusGroupBox->setLayout(statusLayout);
+}
+
+void Window::createMachineGroupBox()
+{
+    machineGroupBox = new QGroupBox(tr("Machine"));
+
+    sshButton = new QPushButton(tr("SSH"));
+
+    QHBoxLayout *machineLayout = new QHBoxLayout;
+    machineLayout->addWidget(sshButton);
+    machineGroupBox->setLayout(machineLayout);
 }
 
 static QString minikubePath()
