@@ -72,6 +72,7 @@ class QPushButton;
 class QSpinBox;
 class QString;
 class QTextEdit;
+class QProcess;
 QT_END_NAMESPACE
 
 //! [0]
@@ -90,6 +91,7 @@ protected:
 private slots:
     void setIcon(int index);
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
+    void dashboardClose();
 
 private:
     void createStatusGroupBox();
@@ -98,6 +100,7 @@ private:
     void createTrayIcon();
 
     void sshConsole();
+    void dashboardBrowser();
     bool getProcessOutput(QStringList arguments, QString &text);
     void updateStatus();
     void sendMachineCommand(QString cmd);
@@ -107,6 +110,8 @@ private:
     QGroupBox *statusGroupBox;
     QLabel *textLabel;
     QPushButton *sshButton;
+    QPushButton *dashboardButton;
+    QProcess *dashboardProcess;
 
     QGroupBox *machineGroupBox;
     QPushButton *updateButton;

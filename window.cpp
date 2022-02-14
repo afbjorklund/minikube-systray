@@ -93,10 +93,13 @@ Window::Window()
     createTrayIcon();
 
     connect(sshButton, &QAbstractButton::clicked, this, &Window::sshConsole);
+    connect(dashboardButton, &QAbstractButton::clicked, this, &Window::dashboardBrowser);
     connect(updateButton, &QAbstractButton::clicked, this, &Window::updateStatus);
     connect(startButton, &QAbstractButton::clicked, this, &Window::startMachine);
     connect(stopButton, &QAbstractButton::clicked, this, &Window::stopMachine);
     connect(trayIcon, &QSystemTrayIcon::activated, this, &Window::iconActivated);
+
+    dashboardProcess = 0;
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(statusGroupBox);
@@ -193,9 +196,11 @@ void Window::createMachineGroupBox()
     machineGroupBox = new QGroupBox(tr("Machine"));
 
     sshButton = new QPushButton(tr("SSH"));
+    dashboardButton = new QPushButton(tr("Dashboard"));
 
     QHBoxLayout *machineLayout = new QHBoxLayout;
     machineLayout->addWidget(sshButton);
+    machineLayout->addWidget(dashboardButton);
     machineGroupBox->setLayout(machineLayout);
 }
 
@@ -251,6 +256,27 @@ void Window::sshConsole()
 #endif
 }
 
+void Window::dashboardBrowser()
+{
+    dashboardClose();
+
+    QString program = minikubePath();
+    QProcess *process = new QProcess(this);
+    QStringList arguments = { "dashboard" };
+    process->start(program, arguments);
+
+    dashboardProcess = process;
+    dashboardProcess->waitForStarted();
+}
+
+void Window::dashboardClose()
+{
+    if (dashboardProcess) {
+        dashboardProcess->terminate();
+        dashboardProcess->waitForFinished();
+    }
+}
+
 bool Window::getProcessOutput(QStringList arguments, QString &text)
 {
     bool success;
@@ -280,16 +306,19 @@ void Window::updateStatus()
         if (text->startsWith("Running")) {
             statusLabel->setText(tr("Running"));
             sshButton->setEnabled(true);
+            dashboardButton->setEnabled(true);
             startButton->setEnabled(false);
             stopButton->setEnabled(true);
         } else if (text->startsWith("Stopped")) {
             statusLabel->setText(tr("Stopped"));
             sshButton->setEnabled(false);
+            dashboardButton->setEnabled(false);
             startButton->setEnabled(true);
             stopButton->setEnabled(false);
         } else {
             statusLabel->setText(tr("Not Started "));
             sshButton->setEnabled(false);
+            dashboardButton->setEnabled(false);
             startButton->setEnabled(false);
             stopButton->setEnabled(false);
         }
