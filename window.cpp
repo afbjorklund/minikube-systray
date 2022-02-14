@@ -188,9 +188,19 @@ void Window::createStatusGroupBox()
     statusGroupBox->setLayout(statusLayout);
 }
 
-void Window::sshConsole()
+static QString minikubePath()
 {
     QString program = QStandardPaths::findExecutable("minikube");
+    if (program.isEmpty()) {
+        QStringList paths = { "/usr/local/bin" };
+        program = QStandardPaths::findExecutable("minikube", paths);
+    }
+    return program;
+}
+
+void Window::sshConsole()
+{
+    QString program = minikubePath();
 #ifndef QT_NO_TERMWIDGET
     QMainWindow *mainWindow = new QMainWindow();
     int startnow = 0; // set shell program first
@@ -234,7 +244,7 @@ bool Window::getProcessOutput(QStringList arguments, QString &text)
 {
     bool success;
 
-    QString program = "minikube";
+    QString program = minikubePath();
 
     QProcess *process = new QProcess(this);
     process->start(program, arguments);
@@ -278,7 +288,7 @@ void Window::updateStatus()
 
 void Window::sendMachineCommand(QString cmd)
 {
-    QString program = "minikube";
+    QString program = minikubePath();
     QStringList arguments;
     arguments << cmd;
     bool success;
