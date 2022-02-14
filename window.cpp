@@ -106,7 +106,6 @@ Window::Window()
 
     setWindowTitle(tr("minikube"));
     setWindowIcon(*trayIconIcon);
-    resize(400, 300);
 }
 //! [0]
 
